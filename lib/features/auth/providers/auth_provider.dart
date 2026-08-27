@@ -60,6 +60,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           'id': 'demo-farmer-id',
           'full_name': 'സുരേഷ് കുമാർ (Suresh Kumar)',
           'phone_number': '+91 98470 12345',
+          'email': 'sureshkumar@gmail.com',
           'preferred_language': 'ml',
           'farmer_profile': {
             'district': 'Wayanad',
@@ -75,10 +76,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<bool> loginWithPhone(String phone, String name) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
+      final cleanPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+      final cleanName = name
+          .toLowerCase()
+          .replaceAll(RegExp(r'[^a-z0-9]'), '')
+          .trim();
+      final userEmail = '${cleanName.isEmpty ? "farmer" : cleanName}@gmail.com';
+
       final data = await _repo.syncUser(
-        firebaseUid: 'farmer_${phone.replaceAll(RegExp(r'[^0-9]'), '')}',
+        firebaseUid: 'farmer_$cleanPhone',
         fullName: name,
         phoneNumber: phone,
+        email: userEmail,
       );
       state = state.copyWith(
         isAuthenticated: true,

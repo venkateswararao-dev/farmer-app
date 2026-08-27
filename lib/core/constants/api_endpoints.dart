@@ -1,6 +1,6 @@
 class ApiEndpoints {
-  // Local network IP for mobile device testing
-  static const String baseUrl = 'http://10.198.171.29:3000';
+  // Production Live Render API URL
+  static const String baseUrl = 'https://farmer-api-z5vp.onrender.com';
 
   static const String authSync = '/auth/sync';
   static const String authMe = '/auth/me';

@@ -31,7 +31,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final success = await ref.read(authProvider.notifier).loginWithPhone(phone, name);
     if (success && mounted) {
-      context.go('/home');
+      final user = ref.read(authProvider).user;
+      final hasProfile = user != null && user['farmer_profile'] != null;
+      if (hasProfile) {
+        context.go('/home');
+      } else {
+        context.go('/farm-setup');
+      }
     }
   }
 

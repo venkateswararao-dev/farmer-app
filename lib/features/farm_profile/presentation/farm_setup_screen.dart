@@ -42,6 +42,7 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
 
   void _saveFarmProfile() async {
     final landSize = double.tryParse(_landSizeController.text.trim()) ?? 2.0;
+    final isMl = ref.read(localeProvider) == AppLang.ml;
 
     final success = await ref.read(farmProfileProvider.notifier).saveProfile({
       'district': _selectedDistrict,
@@ -50,14 +51,37 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
       'irrigation_type': _selectedIrrigation,
     });
 
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Farm profile saved successfully!'),
-          backgroundColor: AppColors.primary,
-        ),
-      );
-      context.go('/home');
+    if (success) {
+      // Save all selected crops
+      for (final cropStr in _selectedCrops) {
+        final enName = cropStr.split('(')[0].trim();
+        final mlName = cropStr.contains('(') && cropStr.contains(')')
+            ? cropStr.substring(cropStr.indexOf('(') + 1, cropStr.indexOf(')'))
+            : cropStr;
+
+        await ref.read(farmProfileProvider.notifier).addCrop({
+          'crop_name_en': enName,
+          'crop_name_ml': mlName,
+          'area_acres': 1.0,
+          'growth_stage': 'Vegetative',
+        });
+      }
+
+      await ref.read(farmProfileProvider.notifier).loadFarmData();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isMl
+                  ? 'കൃഷിയിടവും വിളകളും വിജയകരമായി സേവ് ചെയ്തു!'
+                  : 'Farm profile and crops saved successfully!',
+            ),
+            backgroundColor: AppColors.primary,
+          ),
+        );
+        context.go('/home');
+      }
     }
   }
 
