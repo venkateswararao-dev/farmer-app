@@ -1,10 +1,10 @@
 class MlStrings {
   // Navigation
   static const home = 'ഹോം';
-  static const aiAssistant = 'കൃഷി മിത്ര';
-  static const cropDoctor = 'രോഗ നിർണയം';
+  static const aiAssistant = 'AI ചാറ്റ്';
+  static const cropDoctor = 'ഡോക്ടർ';
   static const weather = 'കാലാവസ്ഥ';
-  static const marketPrices = 'വിപണി വില';
+  static const marketPrices = 'വിപണി';
   static const profile = 'പ്രൊഫൈൽ';
 
   // Home & Dashboard

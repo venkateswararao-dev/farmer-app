@@ -56,7 +56,13 @@ class WeatherScreen extends ConsumerWidget {
                               children: [
                                 const Icon(Icons.location_on, size: 18, color: AppColors.primary),
                                 const SizedBox(width: 8),
-                                Text('${d.nameEn} (${d.nameMl})', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                Expanded(
+                                  child: Text(
+                                    isMl ? d.nameMl : d.nameEn,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ],
                             ),
                           );

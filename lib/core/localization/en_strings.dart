@@ -1,10 +1,10 @@
 class EnStrings {
   // Navigation
   static const home = 'Home';
-  static const aiAssistant = 'AI Assistant';
-  static const cropDoctor = 'Crop Doctor';
+  static const aiAssistant = 'AI Chat';
+  static const cropDoctor = 'Doctor';
   static const weather = 'Weather';
-  static const marketPrices = 'Market Prices';
+  static const marketPrices = 'Mandi';
   static const profile = 'Profile';
 
   // Home & Dashboard

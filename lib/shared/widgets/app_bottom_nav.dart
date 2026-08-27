@@ -46,39 +46,64 @@ class ScaffoldWithNavBar extends ConsumerWidget {
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (index) => _onItemTapped(index, context),
-        backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primaryContainer,
-        elevation: 8,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home, color: AppColors.primary),
-            label: s.home,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.psychology_outlined),
-            selectedIcon: const Icon(Icons.psychology, color: AppColors.primary),
-            label: s.aiAssistant,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.camera_alt_outlined),
-            selectedIcon: const Icon(Icons.camera_alt, color: AppColors.primary),
-            label: s.cropDoctor,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.cloud_outlined),
-            selectedIcon: const Icon(Icons.cloud, color: AppColors.primary),
-            label: s.weather,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.currency_rupee),
-            selectedIcon: const Icon(Icons.currency_rupee, color: AppColors.primary),
-            label: s.marketPrices,
-          ),
-        ],
+      bottomNavigationBar: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          height: 64,
+          indicatorColor: AppColors.primaryContainer,
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              );
+            }
+            return const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+            );
+          }),
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const IconThemeData(size: 22, color: AppColors.primary);
+            }
+            return const IconThemeData(size: 22, color: AppColors.textSecondary);
+          }),
+        ),
+        child: NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: (index) => _onItemTapped(index, context),
+          backgroundColor: AppColors.surface,
+          elevation: 4,
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home),
+              label: s.home,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.psychology_outlined),
+              selectedIcon: const Icon(Icons.psychology),
+              label: s.aiAssistant,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.camera_alt_outlined),
+              selectedIcon: const Icon(Icons.camera_alt),
+              label: s.cropDoctor,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.cloud_outlined),
+              selectedIcon: const Icon(Icons.cloud),
+              label: s.weather,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.currency_rupee),
+              selectedIcon: const Icon(Icons.currency_rupee),
+              label: s.marketPrices,
+            ),
+          ],
+        ),
       ),
     );
   }

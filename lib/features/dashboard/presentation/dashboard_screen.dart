@@ -54,7 +54,6 @@ class DashboardScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.textPrimary,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -91,7 +90,7 @@ class DashboardScreen extends ConsumerWidget {
                           ),
                           const SizedBox(width: 8),
                           InkWell(
-                            onTap: () => context.go('/profile'),
+                            onTap: () => context.push('/profile'),
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
                               padding: const EdgeInsets.all(6),
@@ -183,20 +182,39 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.location_on, color: Colors.white70, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      isMl ? weather['district_ml'] ?? 'വയനാട്' : weather['district'] ?? 'Wayanad',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      isMl ? (weather['district_ml'] ?? 'ഇടുക്കി') : (weather['district'] ?? 'Idukki'),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                   ],
                 ),
-                Text(
-                  '$temp°C • $condition',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$temp°C',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        condition,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 12),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -347,10 +365,14 @@ class DashboardScreen extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              isMl ? 'ഇന്നത്തെ കാർഷിക നിർദ്ദേശങ്ങൾ' : 'Personalized Farm Advisory',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Expanded(
+              child: Text(
+                isMl ? 'ഇന്നത്തെ കാർഷിക നിർദ്ദേശങ്ങൾ' : 'Personalized Farm Advisory',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
+            const SizedBox(width: 8),
             const Icon(Icons.auto_awesome, color: AppColors.primaryLight, size: 20),
           ],
         ),
@@ -503,41 +525,118 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildMyCropsSection(BuildContext context, List<dynamic> crops, bool isMl) {
+    if (crops.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isMl ? 'എന്റെ കൃഷികൾ' : 'My Cultivated Crops',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+                onPressed: () => context.push('/farm-setup'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: () => context.push('/farm-setup'),
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border, style: BorderStyle.solid),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.add_circle_outline, color: AppColors.primary, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    isMl ? 'നിങ്ങളുടെ കൃഷികൾ ചേർക്കുക' : 'Add Your Cultivated Crops',
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              isMl ? 'എന്റെ കൃഷികൾ' : 'My Cultivated Crops',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Text(
+                  isMl ? 'എന്റെ കൃഷികൾ' : 'My Cultivated Crops',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '${crops.length}',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primary),
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+            TextButton.icon(
+              icon: const Icon(Icons.add_circle_outline, color: AppColors.primary, size: 16),
+              label: Text(isMl ? 'മാറ്റുക' : 'Manage', style: const TextStyle(color: AppColors.primary, fontSize: 13)),
               onPressed: () => context.push('/farm-setup'),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        Row(
-          children: crops.take(3).map((crop) {
-            final name = isMl ? crop['crop_name_ml'] : crop['crop_name_en'];
-            final acres = crop['area_acres']?.toString() ?? '1.0';
+        SizedBox(
+          height: 96,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: crops.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, idx) {
+              final crop = crops[idx];
+              final name = isMl
+                  ? (crop['crop_name_ml'] ?? crop['crop_name_en'])
+                  : (crop['crop_name_en'] ?? crop['crop_name_ml']);
+              final acres = crop['area_acres']?.toString() ?? '1.0';
 
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.all(12),
+              return Container(
+                width: 136,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.02),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.eco, color: AppColors.primaryLight, size: 20),
+                    const Icon(Icons.eco, color: AppColors.primary, size: 20),
                     const SizedBox(height: 6),
                     Text(
                       name ?? '',
@@ -545,15 +644,16 @@ class DashboardScreen extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       '$acres ${isMl ? 'ഏക്കർ' : 'Acres'}',
                       style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
                     ),
                   ],
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            },
+          ),
         ),
       ],
     );

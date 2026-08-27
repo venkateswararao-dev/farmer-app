@@ -107,20 +107,24 @@ class ProfileScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            isMl ? 'കൃഷിയിട വിവരങ്ങൾ' : 'Farm Details',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          Expanded(
+                            child: Text(
+                              isMl ? 'കൃഷിയിട വിവരങ്ങൾ' : 'Farm Details',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           TextButton(
-                            onPressed: () => context.go('/farm-setup'),
+                            onPressed: () => context.push('/farm-setup'),
                             child: Text(isMl ? 'മാറ്റങ്ങൾ വരുത്തുക' : 'Edit'),
                           ),
                         ],
                       ),
                       const Divider(height: 12),
+                      _buildInfoRow(isMl ? 'ജില്ല' : 'District', farmState.profile?['district'] ?? 'Idukki'),
                       _buildInfoRow(isMl ? 'വിസ്തീർണ്ണം' : 'Total Land', '$landSize ${isMl ? 'ഏക്കർ' : 'Acres'}'),
-                      _buildInfoRow(isMl ? 'മണ്ണ്' : 'Soil Type', farmState.profile?['soil_type'] ?? 'Laterite (വെട്ടുകൽ)'),
-                      _buildInfoRow(isMl ? 'ജലസേചനം' : 'Irrigation', farmState.profile?['irrigation_type'] ?? 'Drip & Open Well'),
+                      _buildInfoRow(isMl ? 'മണ്ണ്' : 'Soil Type', farmState.profile?['soil_type'] ?? (isMl ? 'വെട്ടുകൽ മണ്ണ്' : 'Laterite Soil')),
+                      _buildInfoRow(isMl ? 'ജലസേചനം' : 'Irrigation', farmState.profile?['irrigation_type'] ?? (isMl ? 'തുള്ളി നന' : 'Drip & Open Well')),
                     ],
                   ),
                 ),
@@ -262,7 +266,15 @@ class ProfileScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );

@@ -64,25 +64,53 @@ class FarmProfileNotifier extends StateNotifier<FarmProfileState> {
       state = state.copyWith(
         isLoading: false,
         profile: {
-          'district': 'Wayanad',
-          'total_land_acres': 3.5,
-          'soil_type': 'Laterite (വെട്ടുകൽ മണ്ണ്)',
+          'district': 'Idukki',
+          'total_land_acres': 2.5,
+          'soil_type': 'Laterite',
           'irrigation_type': 'Drip & Open Well',
         },
         crops: [
-          {'id': '1', 'crop_name_en': 'Coconut', 'crop_name_ml': 'തെങ്ങ്', 'area_acres': 1.5, 'health_status': 'Healthy'},
+          {'id': '1', 'crop_name_en': 'Cardamom', 'crop_name_ml': 'ഏലം', 'area_acres': 1.5, 'health_status': 'Healthy'},
           {'id': '2', 'crop_name_en': 'Black Pepper', 'crop_name_ml': 'കുരുമുളക്', 'area_acres': 1.0, 'health_status': 'Healthy'},
-          {'id': '3', 'crop_name_en': 'Rubber', 'crop_name_ml': 'റബ്ബർ', 'area_acres': 1.0, 'health_status': 'Good'},
         ],
       );
     }
   }
 
   Future<bool> saveProfile(Map<String, dynamic> data) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, error: null);
     try {
       final updated = await _repo.upsertProfile(data);
       state = state.copyWith(isLoading: false, profile: updated);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> saveCompleteFarmSetup({
+    required Map<String, dynamic> profileData,
+    required List<Map<String, dynamic>> cropsData,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final updatedProfile = await _repo.upsertProfile(profileData);
+
+      // Save all crops concurrently in parallel
+      if (cropsData.isNotEmpty) {
+        await Future.wait(
+          cropsData.map((c) => _repo.addCrop(c).catchError((_) => <String, dynamic>{})),
+        );
+      }
+
+      final freshCrops = await _repo.getFarmerCrops().catchError((_) => <dynamic>[]);
+
+      state = state.copyWith(
+        isLoading: false,
+        profile: updatedProfile,
+        crops: freshCrops.isNotEmpty ? freshCrops : state.crops,
+      );
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
