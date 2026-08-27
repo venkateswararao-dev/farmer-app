@@ -82,6 +82,16 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
         );
         context.go('/home');
       }
+    } else {
+      if (mounted) {
+        final errorMsg = ref.read(farmProfileProvider).error ?? 'Failed to save farm profile. Please try again.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 

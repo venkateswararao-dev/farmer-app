@@ -30,7 +30,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (name.isEmpty || phone.isEmpty) return;
 
     final success = await ref.read(authProvider.notifier).loginWithPhone(phone, name);
-    if (success && mounted) {
+    if (!mounted) return;
+
+    if (success) {
       final user = ref.read(authProvider).user;
       final hasProfile = user != null && user['farmer_profile'] != null;
       if (hasProfile) {
@@ -38,6 +40,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       } else {
         context.go('/farm-setup');
       }
+    } else {
+      final errorMsg = ref.read(authProvider).error ?? 'Login failed. Please check server connection.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMsg),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
